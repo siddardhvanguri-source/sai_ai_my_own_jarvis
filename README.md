@@ -1,27 +1,36 @@
-# fullstack-agent
+# Sai AI - My Own Jarvis 🤖✨
 
-> **Never used Claude Code?** Start at [jaredrhod.com](https://jaredrhod.com): pick your situation and it routes you to the right path.
+An omnipresent, personal full-stack AI assistant with memory, voice, visual face, and gesture controls integrated into the Windows desktop environment.
 
-**Runs on:** Claude Code only; the installer itself is a Claude Code wizard. The $20 Pro plan is enough.
+---
 
-Not an agent that writes full-stack code. **An agent that HAS a full stack: memory, voice, and face, plus an optional set of hands.** This repo assembles my whole setup on your machine in one guided conversation, and when it finishes, your screen is a living circuit board with your agent's name on the chip, and it speaks first:
+## 🚀 Overview & What We Have Done
 
-> "Hello [you], what are we working on today?"
+This repository contains the complete codebase, configuration, tools, and launcher scripts for **Sai** — a personalized AI desktop assistant ("My Own Jarvis").
 
-[![Watch the tour: My Jarvis AI Assistant, free on GitHub](https://img.youtube.com/vi/FiOTrxq9ckM/maxresdefault.jpg)](https://www.youtube.com/watch?v=FiOTrxq9ckM)
+### Key Milestones & Accomplishments:
 
-**Nine minutes shows you everything you're about to get** (the voice, the face, the memory, and the hands): the tour video above, straight from my own desk.
+1. **Custom Assistant Identity & Boot Engine (`Sai`)**:
+   - Configured custom identity with mandate for proactive assistance, reliability, and strategic partnership.
+   - Pinned system boot configurations (`CLAUDE.md`) linking memory vaults, rules, and startup routines.
 
-That's not a demo clip. That's minute one.
+2. **Full-Stack Sensory & Interaction Suite**:
+   - 🧠 **Memory Vault**: Persistent memory integration via Obsidian/Markdown text vault (`jarvis-vault`), preserving cross-session context, daily notes, and priorities.
+   - 🎙️ **Voice & Ear (`backtalk`)**: Push-to-talk voice interface with ultra-low latency real-time speech-to-text and text-to-speech feedback.
+   - 🎭 **Visual Face (`ai-visualizer`)**: Dynamic full-screen visualizer displaying idle, listening, thinking, and speaking states in real-time.
+   - ✋ **Webcam Gesture Control (`barehands`)**: Computer vision-enabled board interface to interact with notes, cards, and images using hand tracking.
 
-## What you get
+3. **Skills & UI Capabilities**:
+   - Added agent skills including `find-ui-templates` and `kokonut-ui` component library integration.
 
-Four pieces, each its own open repo, each excellent alone, assembled here into one agent:
+4. **Desktop Automation & Startup Scripts**:
+   - Configured one-click desktop launchers (`start.bat`, `start.sh`, background VBS launcher) for seamless agent startup on Windows.
 
-- **The mind: [ai-memory-vault](https://github.com/jaredrhod/ai-memory-vault).** A real, persistent memory built on plain text files your AI reads and writes. It remembers you, your work, and every lesson, across every session, with no size ceiling.
-- **The mouth: [backtalk](https://github.com/jaredrhod/backtalk).** Hold a key, talk out loud, and your agent answers through your speakers about a second later, with all its tools and its whole personality.
-- **The face: [ai-visualizer](https://github.com/jaredrhod/ai-visualizer).** Full-screen visualizers that idle, listen, think, and speak in sync with the real conversation. Four faces ship, including the living circuit board from my videos.
-- **The hands, the optional extra: [barehands](https://github.com/jaredrhod/barehands).** Move notes and images around your screen with your bare hands through your webcam. No headset, no controllers. Opens in its own window instead of the face. Take it now or add it later by running the same install again.
+5. **Version Control & GitHub Sync**:
+   - Initialized Git repository tracking all skills, workflows, configuration, and documentation.
+   - Synchronized and published all assets to [sai_ai_my_own_jarvis](https://github.com/siddardhvanguri-source/sai_ai_my_own_jarvis).
+
+---
 
 Every piece is optional. The wizard asks which ones you want and explains each in plain English before you decide.
 
