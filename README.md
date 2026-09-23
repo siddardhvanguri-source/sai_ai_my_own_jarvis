@@ -1,97 +1,220 @@
-# Sai AI - My Own Jarvis 🤖✨
+# Sai AI — My Own Jarvis 🤖⚡
 
-An omnipresent, personal full-stack AI assistant with memory, voice, visual face, and gesture controls integrated into the Windows desktop environment.
-
----
-
-## 🚀 Overview & What We Have Done
-
-This repository contains the complete codebase, configuration, tools, and launcher scripts for **Sai** — a personalized AI desktop assistant ("My Own Jarvis").
-
-### Key Milestones & Accomplishments:
-
-1. **Custom Assistant Identity & Boot Engine (`Sai`)**:
-   - Configured custom identity with mandate for proactive assistance, reliability, and strategic partnership.
-   - Pinned system boot configurations (`CLAUDE.md`) linking memory vaults, rules, and startup routines.
-
-2. **Full-Stack Sensory & Interaction Suite**:
-   - 🧠 **Memory Vault**: Persistent memory integration via Obsidian/Markdown text vault (`jarvis-vault`), preserving cross-session context, daily notes, and priorities.
-   - 🎙️ **Voice & Ear (`backtalk`)**: Push-to-talk voice interface with ultra-low latency real-time speech-to-text and text-to-speech feedback.
-   - 🎭 **Visual Face (`ai-visualizer`)**: Dynamic full-screen visualizer displaying idle, listening, thinking, and speaking states in real-time.
-   - ✋ **Webcam Gesture Control (`barehands`)**: Computer vision-enabled board interface to interact with notes, cards, and images using hand tracking.
-
-3. **Skills & UI Capabilities**:
-   - Added agent skills including `find-ui-templates` and `kokonut-ui` component library integration.
-
-4. **Desktop Automation & Startup Scripts**:
-   - Configured one-click desktop launchers (`start.bat`, `start.sh`, background VBS launcher) for seamless agent startup on Windows.
-
-5. **Version Control & GitHub Sync**:
-   - Initialized Git repository tracking all skills, workflows, configuration, and documentation.
-   - Synchronized and published all assets to [sai_ai_my_own_jarvis](https://github.com/siddardhvanguri-source/sai_ai_my_own_jarvis).
+An omnipresent, personal full-stack AI desktop assistant with persistent memory, multi-model intelligence, real-time voice, reactive visual faces, and computer-vision gesture controls integrated into the Windows desktop environment.
 
 ---
 
-Every piece is optional. The wizard asks which ones you want and explains each in plain English before you decide.
+## 📑 Table of Contents
 
-## Install
+- [Overview & Architecture](#-overview--architecture)
+- [Multi-Model Engine Hub](#-multi-model-engine-hub)
+- [Sensory & Interaction Subsystems](#-sensory--interaction-subsystems)
+- [On-Device Tools & Capabilities](#-on-device-tools--capabilities)
+- [Installed Skills](#-installed-skills)
+- [Project Directory Structure](#-project-directory-structure)
+- [Startup & Desktop Launchers](#-startup--desktop-launchers)
+- [Model Configuration (`backtalk.json`)](#-model-configuration-backtalkjson)
+- [License & Credits](#-license--credits)
 
-You need [Claude Code](https://jaredrhod.com/start) with a Claude subscription. Mac and Linux also use git (macOS offers to install it the first time you use it). Windows needs nothing else: the installer sets up git for you during setup. Then one paste into your terminal.
+---
 
-Mac and Linux:
+## 🚀 Overview & Architecture
 
+**Sai AI** is built on the philosophy of a **"Full Stack Agent"** — an AI assistant that doesn't just write code, but possesses a complete sensory and interactive embodiment:
+- **A Mind** (Persistent memory vault that survives sessions)
+- **A Voice & Ears** (Low-latency speech-to-text, neural TTS, wake word, and push-to-talk)
+- **A Face** (Dynamic reactive visualizers and 3D avatar reflecting conversation states)
+- **A Set of Hands** (Webcam gesture tracking for manipulating notes and boards)
+- **Local PC Superpowers** (PowerShell execution, app launching, system metrics, code running)
+
+```mermaid
+flowchart TD
+    subgraph Input_Layer ["Sensory Input Layer"]
+        Mic["🎙️ Microphone (Open Mic 'Sai' / PTT 'Home')"]
+        Cam["📷 Webcam (Hand Tracking)"]
+        Text["⌨️ Terminal / Chat"]
+    end
+
+    subgraph Core_Engine ["Sai Intelligence Core (Multi-Engine)"]
+        Router{"🧠 Model Router / Fallback"}
+        Groq["⚡ Groq Cloud (Llama 3.3 70B Versatile)"]
+        Ollama["🦙 Ollama Local (Llama 3.2 1B - 100% Offline)"]
+        OpenRouter["🌐 OpenRouter (Claude / GPT-4o / DeepSeek)"]
+        Nvidia["🟢 NVIDIA NIM (Nemotron 3.5)"]
+        ClaudeCode["💻 Claude Code / Boot Agent"]
+    end
+
+    subgraph Sensory_Output ["Output & Actuation"]
+        TTS["🔊 Kokoro Neural Voice (am_michael)"]
+        Visualizer["🎭 Reactive Visualizer (Avatar / Circuit Board / Neural)"]
+        HandsBoard["✋ Barehands Virtual Stage"]
+        Tools["🛠️ Local Agent Tools (Shell, Apps, Code, Vault)"]
+        Vault[("💾 Obsidian Memory Vault (jarvis-vault)")]
+    end
+
+    Mic -->|Faster-Whisper STT| Router
+    Text --> Router
+    Cam --> HandsBoard
+
+    Router --> Groq
+    Router --> Ollama
+    Router --> OpenRouter
+    Router --> Nvidia
+    Router --> ClaudeCode
+
+    Groq & Ollama & OpenRouter & Nvidia --> TTS
+    Groq & Ollama & OpenRouter & Nvidia --> Visualizer
+    Groq & Ollama & OpenRouter & Nvidia --> Tools
+    Tools <--> Vault
 ```
-mkdir -p ~/my-agent && cd ~/my-agent && git clone https://github.com/jaredrhod/fullstack-agent && cd fullstack-agent && claude "set me up"
+
+---
+
+## 🧠 Multi-Model Engine Hub
+
+Sai is integrated with multiple AI inference engines with dynamic switching and fallback capabilities:
+
+| Provider | Default Model | Mode | Role & Capabilities |
+| :--- | :--- | :--- | :--- |
+| **⚡ Groq** | `llama-3.3-70b-versatile` | Cloud | Ultra-low latency inference (~1s spoken response cycle), high reasoning power for daily chat and voice. |
+| **🦙 Ollama** | `llama3.2:1b` (`http://127.0.0.1:11434`) | Local / On-Device | 100% offline, privacy-first local intelligence with zero internet required. |
+| **🌐 OpenRouter** | Multi-model routing | Cloud | Access to flagship models (`GPT-4o`, `Claude 3.5 Sonnet`, `DeepSeek-V3`, `Llama 3.3`). |
+| **🟢 NVIDIA NIM** | `Nemotron 3.5` | Cloud | High-throughput GPU-accelerated enterprise models. |
+| **💻 Claude Code** | Anthropic Engine | CLI / Boot | Deep coding tasks, repository refactoring, and initial system installation. |
+
+---
+
+## 🎙️ Sensory & Interaction Subsystems
+
+### 1. 🧠 The Mind: `ai-memory-vault` & `jarvis-vault`
+- **Location**: `C:/Users/saisi/jarvis-vault`
+- **Mechanism**: Plain-text Obsidian-compatible Markdown vault that Sai reads and writes autonomously.
+- **Features**:
+  - `01 - Daily Notes/`: Daily logs backfilled with conversation context.
+  - `Active Priorities.md`: Open tasks, goals, and follow-ups.
+  - `VAULT-INDEX.md`: Master map of memory and user profile.
+  - Zero context ceiling — memory persists forever across reboots.
+
+### 2. 👂 The Ears & 🗣️ The Mouth: `backtalk`
+- **Speech-to-Text (STT)**: Faster-Whisper (`base.en` / local models) with audio ducking.
+- **Text-to-Speech (TTS)**: Kokoro Neural Voice (`am_michael` at 1.30x speed).
+- **Trigger Modes**:
+  - **Open Mic**: Listens continuously for the wake word `"Sai"` or `"Hey Sai"`.
+  - **Push-to-Talk (PTT)**: Press and hold the `Home` key to speak instantly.
+- **Thinking Sounds & State Files**: Emits real-time waveform signals (`.voice_waveform`, `.voice_state`) to sync the UI.
+
+### 3. 🎭 The Face: `ai-visualizer`
+- Full-screen reactive interfaces running locally via Python/HTML5:
+  1. **`avatar`**: Interactive 3D cybernetic face model.
+  2. **`board`**: Living circuit board with animated pathways.
+  3. **`neural`**: Synaptic neural network firing in sync with thinking/speech.
+  4. **`radial`**: Harmonic radial frequency visualizer.
+  5. **`rain`**: Matrix cyber digital rain.
+- **States**: Seamless transitions between `idle`, `listening`, `thinking`, and `speaking`.
+
+### 4. ✋ The Hands: `barehands`
+- Webcam computer vision hand-tracking interface.
+- Manipulate cards, notes, diagrams, and presentation elements on a 3D canvas using hand gestures without VR controllers.
+
+---
+
+## 🛠️ On-Device Tools & Capabilities
+
+Located in `backtalk/backtalk/agent_tools.py`, Sai is equipped with native Windows execution capabilities:
+
+- **💻 Shell & PowerShell Executor**: Runs terminal commands and scripts in the workspace.
+- **📝 Code Generator & Runner**: Writes code files directly to `jarvis-vault/Code` or `my-agent/workspace` and executes Python scripts.
+- **🚀 App & Game Launcher**: Voice-activated launching for Spotify, Discord, VS Code, Browser, and games.
+- **✉️ Draft Manager**: Drafts emails and notes directly into `jarvis-vault/Drafts`.
+- **📸 Screenshot Capture**: Captures desktop screen snapshots into `jarvis-vault/Screenshots`.
+- **📊 System Monitor**: Real-time inspection of CPU usage, RAM, battery levels, and active window processes via `psutil`.
+
+---
+
+## 🧩 Installed Skills
+
+- **`kokonut-ui`** (`.agents/skills/kokonut-ui`): Library of 100+ animated React/Tailwind components (AI inputs, liquid glass cards, beam backgrounds).
+- **`find-ui-templates`** (`.agents/skills/find-ui-templates`): Web curation skill for locating cutting-edge UI/website design references and templates.
+
+---
+
+## 📁 Project Directory Structure
+
+```text
+c:\Users\saisi\
+├── my-agent/
+│   ├── CLAUDE.md                   # Pinned agent boot identity & core rules
+│   ├── fullstack-agent/            # Agent management & orchestration
+│   │   ├── start.bat / start.sh    # Main service orchestrator
+│   │   ├── update.bat / update.sh  # Auto-updater script
+│   │   └── fullstack-agent.md      # Setup wizard & documentation
+│   ├── backtalk/                   # Voice & Multi-Engine Brain
+│   │   ├── backtalk.json           # Model keys, providers, audio config
+│   │   └── backtalk/
+│   │       ├── brain.py            # Groq / Ollama / OpenRouter / NVIDIA router
+│   │       ├── agent_tools.py      # On-device PC execution tools
+│   │       ├── ears.py             # Whisper STT & wake-word engine
+│   │       ├── mouth.py            # Kokoro neural TTS synthesis
+│   │       └── ptt.py              # Push-to-talk handler
+│   ├── ai-visualizer/              # Reactive UI & Faces
+│   │   └── faces/                  # avatar, board, neural, radial, rain
+│   ├── barehands/                  # Computer-vision gesture board
+│   ├── workspace/                  # Scratch execution directory
+│   └── skills/                     # Agent skills (kokonut-ui, templates)
+├── jarvis-vault/                   # Persistent Markdown Memory Vault
+│   ├── VAULT-INDEX.md              # Knowledge index & identity profile
+│   ├── 01 - Daily Notes/           # Daily logs
+│   ├── Code/                       # Generated code snippets
+│   ├── Drafts/                     # Prepared drafts
+│   └── Screenshots/                # Desktop captures
+└── OneDrive/Desktop/
+    ├── Start Sai.bat               # Full launcher (Face + Hands + Voice)
+    └── Sai Background Assistant.vbs# Stealth background runner (No terminal window)
 ```
 
-Windows (PowerShell):
+---
 
+## ⚡ Startup & Desktop Launchers
+
+| Launcher | Type | Action |
+| :--- | :--- | :--- |
+| **`Start Sai.bat`** | Foreground | Boots the full suite: Visual Face Avatar, 3D Hands Board, and Voice Pipeline. |
+| **`Sai Background Assistant.vbs`** | Background (Stealth) | Runs Sai invisibly in the background without a CMD window; activates on `"Sai"` wake word or `Home` key. |
+| **`start.bat voice`** | CLI | Launches voice and reactive face only. |
+| **`start.bat hands`** | CLI | Launches voice and barehands gesture board. |
+
+---
+
+## ⚙️ Model Configuration (`backtalk.json`)
+
+To configure models, API keys, or switch between local Ollama and Groq cloud inference, edit `backtalk/backtalk.json`:
+
+```json
+{
+  "name": "Sai",
+  "brain_provider": "groq",
+  "model": "llama-3.3-70b-versatile",
+  "ollama_url": "http://127.0.0.1:11434",
+  "ollama_model": "llama3.2:1b",
+  "mic_mode": "open",
+  "wake_word": "sai",
+  "ptt_key": "home",
+  "voice": "am_michael",
+  "speed": 1.30,
+  "stt_model": "base.en",
+  "extra_dirs": [
+    "C:/Users/saisi/jarvis-vault"
+  ]
+}
 ```
-$d="$env:USERPROFILE\.local\bin"; if (Test-Path "$d\claude.exe") { $env:Path="$d;$env:Path" }; New-Item -ItemType Directory -Force -Path $HOME\my-agent | Out-Null; cd $HOME\my-agent; if (-not (Test-Path fullstack-agent\fullstack-agent.md)) { Invoke-WebRequest https://github.com/jaredrhod/fullstack-agent/archive/refs/heads/main.zip -OutFile fsa.zip; Expand-Archive fsa.zip . -Force; New-Item -ItemType Directory -Force -Path fullstack-agent | Out-Null; Get-ChildItem fullstack-agent-main -Force | Copy-Item -Destination fullstack-agent -Recurse -Force; Remove-Item fullstack-agent-main -Recurse -Force; Remove-Item fsa.zip }; cd fullstack-agent; if (Get-Command claude -ErrorAction SilentlyContinue) { claude "set me up" } else { Write-Output "Claude Code is not installed yet. Install it first at https://jaredrhod.com/start then paste this again." }
-```
 
-(The Windows command downloads the toolbox as a zip on purpose, so it works on a machine with no git installed. The installer sets up git for you during setup. Safe to paste as many times as you like: it skips the download when the toolbox is already there, and if an earlier attempt died partway and left a half-finished folder, it downloads again and finishes the job rather than assuming it was already done. If it tells you Claude Code is not installed yet, do the [start page](https://jaredrhod.com/start) first. Heads up for that step on Windows: the Claude Code installer downloads about 330 MB and prints nothing at all while it does, so leave that window alone until it says Installation complete.)
+### Switching to 100% Offline Ollama Mode:
+Set `"brain_provider": "ollama"` in `backtalk.json`. Sai will route all conversation and commands through your local Ollama instance with zero external API calls.
 
-Claude Code opens with the installer already talking to you. (The agent lives in a folder right in your home directory on purpose: on Macs, things that run in the background out of Documents get silently blocked by the system.) Everything after that is a conversation: it asks for your agent's name and personality (or hands you mine, Jarvis, ready to use), which pieces you want, and where your notes live. It does the installing, the configuring, and the wiring itself.
+---
 
-## Already built some of this?
+## 📜 License & Credits
 
-Then you're exactly who this was designed around. If you set up a memory vault, a voice system, or a visualizer before, including the ones my old prompts had your AI hand-build, the wizard adopts before it installs:
-
-- **Your agent's identity and your vault are yours.** Found, kept, never rebuilt, never moved. No questions you already answered.
-- **Hand-built voice lines and visualizers get honestly replaced**, because these repos carry a year of fixes and keep improving with a `git pull`, while a hand-built version is frozen the day it was written. Your old build stays on disk, untouched. Nothing you made is ever deleted.
-- **Except your visualizer scene, which gets promoted.** If your AI built you a custom scene back then, the wizard copies it into the visualizer's gallery as your own face, sitting right beside mine.
-
-## After setup
-
-- **Use your agent:** the wizard leaves three shortcuts on your Desktop, named after your agent. **Chat** opens a typed session, terminal only. **Talk** starts the voice and the face. **Barehands** starts the voice and the hands board (the board is the screen in that mode). Double-click the mood you want; Ctrl-C in the window stops it. (They just run `fullstack-agent/start.sh`, or `start.bat` on Windows, if you ever prefer the terminal.)
-- **Something broken or confusing? Ask your agent to fix it.** Seriously. Open the chat and describe the problem. Every repo here ships a troubleshooting guide written for your agent to read, and your agent is instructed during setup to do the fixing itself. This is the part everyone finds out late: you never have to debug this stack yourself.
-- **Update everything:** `./fullstack-agent/update.sh` on macOS. On Windows, ask your agent: "update everything and tell me what changed." Your files live outside the repos, so updates never touch who your agent is or what it remembers.
-- **Daily habit:** open Claude Code in your agent's folder. That's where it lives.
-
-## The fine print that matters
-
-- The wizard never deletes, overwrites, or moves anything you built. Replacements retire the old thing in place and say so.
-- Your vault stays wherever it already lives. Pieces connect by configuration paths, not by relocation.
-- Requirements per piece: the voice needs a mic and about 1 GB of local models on first run; the hands need a webcam and Chrome; the mind and face need nothing but Python 3, which ships with macOS and most Linux distributions. **Windows ships none**, and the name `python` there is a Microsoft Store placeholder that passes a check and then exits without running, so the face and the hands each carry a `run.bat` that finds a working interpreter or says plainly that there is not one. Windows notes live in each piece's own README.
-- Cross-piece problems: `TROUBLESHOOTING.md` here. Everything else: each piece's own guide.
-
-## The rest of it
-
-Everything here is free and open, and there is a whole community using it.
-
-- **The videos.** Free series on all of it: https://youtube.com/@jaredrhod
-- **The Discord.** Thousands of builders, and the fastest place to get unstuck: https://discord.gg/YSdsqMv3V8
-- **Everything else,** free and open: https://jaredrhod.com
-
-## Support
-
-Free to use, and always will be. If this helped you out, you can buy me a coffee:
-
-[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/jaredrhod)
-
-## License
-
-Copyright (c) 2026 Jared Rhodenizer.
-
-Licensed under the GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later). **Use it in your business, commercially, for free.** Run it, change it, build your workflow on top of it, and charge for the work you do with it. The one rule is that it stays open: if you hand it to someone else, or run a modified version as a service other people use, your version ships under this same license with its source available. Credit me when you build on it. Want it inside a closed-source commercial product? Email license@jaredrhod.com. Full terms are in the LICENSE file and at https://www.gnu.org/licenses/agpl-3.0.html
+- **Base Architecture**: AGPL-3.0-or-later (Jared Rhodenizer)
+- **Customized & Deployed By**: [siddardhvanguri-source](https://github.com/siddardhvanguri-source)
+- **Repository**: [sai_ai_my_own_jarvis](https://github.com/siddardhvanguri-source/sai_ai_my_own_jarvis)
