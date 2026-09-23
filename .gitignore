@@ -1,3 +1,30 @@
-.DS_Store
+# Python & Node
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+venv/
+ENV/
+node_modules/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# Logs & Temporary Agent State
+*.log
+logs/
+.voice_state
+.voice_waveform
+.voice_reply_done
+barehands/state/*.json
+
+# Sensitive configuration
+.env
+

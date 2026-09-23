@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sai — Personal 3D Cybernetic AI Assistant</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      background: radial-gradient(circle at center, #0a1128 0%, #030712 100%);
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    /* Cyber HUD Overlay */
+    .hud-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 32px;
+    }
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border: 2px solid #00f0ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.1);
+      position: relative;
+    }
+    .brand-icon::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: #00f0ff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #00f0ff;
+    }
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+    .brand-text p {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #38bdf8;
+      text-transform: uppercase;
+    }
+    .state-pill {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 8px 18px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    .state-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00f0ff;
+      box-shadow: 0 0 10px #00f0ff;
+      animation: pulse-dot 1.5s infinite;
+    }
+    .state-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #00f0ff;
+    }
+    /* Bottom Telemetry HUD */
+    .hud-footer {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: flex-end;
+      gap: 20px;
+    }
+    .telemetry-card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      backdrop-filter: blur(12px);
+      max-width: 320px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    .telemetry-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .telemetry-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #38bdf8;
+      line-height: 1.4;
+    }
+    /* Controls Bar */
+    .controls-panel {
+      pointer-events: auto;
+      display: flex;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 8px 14px;
+      border-radius: 30px;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+    }
+    .ctrl-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctrl-btn:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: #00f0ff;
+      color: #00f0ff;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+    .ctrl-btn.active {
+      background: #00f0ff;
+      color: #030712;
+      border-color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+    }
+    /* Subtitles Speech Bar */
+    .speech-subtitles {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70%;
+      max-width: 800px;
+      text-align: center;
+      background: rgba(3, 7, 18, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 16px;
+      padding: 16px 24px;
+      backdrop-filter: blur(15px);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: #f8fafc;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.15);
+      transition: opacity 0.3s ease;
+      pointer-events: auto;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="hud-layer">
+    <!-- Header -->
+    <div class="hud-header">
+      <div class="brand">
+        <div class="brand-icon"></div>
+        <div class="brand-text">
+          <h1>Sai AI</h1>
+          <p>Integrated Personal AI Assistant</p>
+        </div>
+      </div>
+      <div class="state-pill">
+        <div class="state-dot" id="state-indicator"></div>
+        <div class="state-name" id="state-label">IDLE</div>
+      </div>
+    </div>
+
+    <!-- Subtitles -->
+    <div class="speech-subtitles" id="subtitles">
+      "Hello, I am Sai. Ready for your command anytime."
+    </div>
+
+    <!-- Footer Telemetry & Controls -->
+    <div class="hud-footer">
+      <div class="telemetry-card">
+        <div class="telemetry-title">Core Telemetry & Vault</div>
+        <div class="telemetry-value" id="vault-status">Vault: C:/Users/saisi/jarvis-vault<br>Memory Synced | Local Private Agent</div>
+      </div>
+
+      <div class="controls-panel">
+        <button class="ctrl-btn active" id="btn-anim" onclick="toggleGestures()">🦾 Limbs Active</button>
+        <button class="ctrl-btn" onclick="triggerTestSpeech()">🎙️ Speak</button>
+        <button class="ctrl-btn" onclick="triggerTestAgent()">⚡ Action Demo</button>
+        <button class="ctrl-btn" onclick="resetCamera()">🎯 Recenter</button>
+      </div>
+
+      <div class="telemetry-card" style="justify-self: end; text-align: right;">
+        <div class="telemetry-title">Hardware & Cloud Engine</div>
+        <div class="telemetry-value" id="hw-status">Groq Whisper STT (150ms)<br>OpenRouter Llama 3.3 70B & NIM</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- THREE.JS SCENE SETUP ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x030712, 0.035);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.2, 5.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 1.7;
+    controls.minDistance = 2.5;
+    controls.maxDistance = 8.5;
+    controls.target.set(0, 0.8, 0);
+
+    // --- LIGHTING ---
+    const ambientLight = new THREE.AmbientLight(0x0f172a, 2.5);
+    scene.add(ambientLight);
+
+    const cyanPoint = new THREE.PointLight(0x00f0ff, 3.5, 12);
+    cyanPoint.position.set(2, 3, 3);
+    scene.add(cyanPoint);
+
+    const blueBackLight = new THREE.PointLight(0x3b82f6, 4.0, 10);
+    blueBackLight.position.set(-2.5, 2, -2);
+    scene.add(blueBackLight);
+
+    const coreLight = new THREE.PointLight(0x00f0ff, 5.0, 4);
+    coreLight.position.set(0, 0.35, 0.4);
+    scene.add(coreLight);
+
+    // --- EMBODIED 3D AVATAR MODEL (Head, Face, Torso, Stomach Core, Limbs) ---
+    const avatarGroup = new THREE.Group();
+    scene.add(avatarGroup);
+
+    // 1. TORSO & CHEST ARMOR
+    const torsoMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      metalness: 0.85,
+      roughness: 0.25,
+    });
+
+    const armorMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.9,
+      roughness: 0.2,
+    });
+
+    const glowCyanMat = new THREE.MeshBasicMaterial({
+      color: 0x00f0ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.35
+    });
+
+    // Torso Upper
+    const chestGeo = new THREE.CylinderGeometry(0.7, 0.5, 1.1, 8);
+    const chest = new THREE.Mesh(chestGeo, torsoMat);
+    chest.position.y = 0.6;
+    avatarGroup.add(chest);
+
+    // Abdomen / Stomach Section
+    const stomachGeo = new THREE.CylinderGeometry(0.5, 0.45, 0.7, 8);
+    const stomach = new THREE.Mesh(stomachGeo, torsoMat);
+    stomach.position.y = -0.15;
+    avatarGroup.add(stomach);
+
+    // 2. ARC REACTOR POWER CORE (Chest & Stomach Center)
+    const reactorGroup = new THREE.Group();
+    reactorGroup.position.set(0, 0.65, 0.45);
+
+    const ringOuterGeo = new THREE.TorusGeometry(0.22, 0.035, 16, 32);
+    const ringOuterMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.9, roughness: 0.1 });
+    const reactorRing = new THREE.Mesh(ringOuterGeo, ringOuterMat);
+    reactorGroup.add(reactorRing);
+
+    const coreEnergyGeo = new THREE.SphereGeometry(0.14, 24, 24);
+    const coreEnergyMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+    const reactorCore = new THREE.Mesh(coreEnergyGeo, coreEnergyMat);
+    reactorGroup.add(reactorCore);
+
+    avatarGroup.add(reactorGroup);
+
+    // 3. HEAD & CYBERNETIC VISOR FACE
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 1.6, 0);
+
+    const headGeo = new THREE.DodecahedronGeometry(0.48, 1);
+    const headMat = new THREE.MeshStandardMaterial({
+      color: 0x0f172a,
+      metalness: 0.9,
+      roughness: 0.2
+    });
+    const headMesh = new THREE.Mesh(headGeo, headMat);
+    headGroup.add(headMesh);
+
+    // Cyber Visor / Eye
+    const visorGeo = new THREE.BoxGeometry(0.65, 0.14, 0.35);
+    const visorMat = new THREE.MeshStandardMaterial({
+      color: 0x00f0ff,
+      emissive: 0x00f0ff,
+      emissiveIntensity: 1.8,
+      roughness: 0.1
+    });
+    const visor = new THREE.Mesh(visorGeo, visorMat);
+    visor.position.set(0, 0.05, 0.36);
+    headGroup.add(visor);
+
+    // Reactive Mouth Wave Lines (Three.js Audio Waveform on Face)
+    const mouthGroup = new THREE.Group();
+    mouthGroup.position.set(0, -0.22, 0.46);
+    const mouthBars = [];
+    for (let i = 0; i < 7; i++) {
+      const barGeo = new THREE.BoxGeometry(0.04, 0.1, 0.02);
+      const barMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const bar = new THREE.Mesh(barGeo, barMat);
+      bar.position.x = (i - 3) * 0.065;
+      mouthGroup.add(bar);
+      mouthBars.push(bar);
+    }
+    headGroup.add(mouthGroup);
+    avatarGroup.add(headGroup);
+
+    // 4. ARTICULATED CYBER LIMBS (Left & Right Arms & Hands)
+    function createCyberArm(isRight) {
+      const armGroup = new THREE.Group();
+      const side = isRight ? 1 : -1;
+      armGroup.position.set(side * 0.85, 1.05, 0);
+
+      // Shoulder joint
+      const shoulderGeo = new THREE.SphereGeometry(0.2, 16, 16);
+      const shoulder = new THREE.Mesh(shoulderGeo, armorMat);
+      armGroup.add(shoulder);
+
+      // Upper Arm
+      const upperGeo = new THREE.CylinderGeometry(0.12, 0.1, 0.65, 12);
+      const upperArm = new THREE.Mesh(upperGeo, torsoMat);
+      upperArm.position.set(side * 0.1, -0.35, 0);
+      upperArm.rotation.z = side * -0.15;
+      armGroup.add(upperArm);
+
+      // Elbow joint
+      const elbowGeo = new THREE.SphereGeometry(0.14, 16, 16);
+      const elbow = new THREE.Mesh(elbowGeo, armorMat);
+      elbow.position.set(side * 0.18, -0.75, 0.05);
+      armGroup.add(elbow);
+
+      // Forearm
+      const forearmGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.65, 12);
+      const forearm = new THREE.Mesh(forearmGeo, torsoMat);
+      forearm.position.set(side * 0.22, -1.1, 0.2);
+      forearm.rotation.x = 0.35;
+      armGroup.add(forearm);
+
+      // Cyber Hand
+      const handGroup = new THREE.Group();
+      handGroup.position.set(side * 0.25, -1.45, 0.35);
+      const palmGeo = new THREE.BoxGeometry(0.15, 0.18, 0.08);
+      const palm = new THREE.Mesh(palmGeo, armorMat);
+      handGroup.add(palm);
+
+      // Fingers
+      for (let f = 0; f < 4; f++) {
+        const fingerGeo = new THREE.BoxGeometry(0.03, 0.14, 0.03);
+        const fingerMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+        const finger = new THREE.Mesh(fingerGeo, fingerMat);
+        finger.position.set((f - 1.5) * 0.04, -0.12, 0);
+        handGroup.add(finger);
+      }
+      armGroup.add(handGroup);
+
+      return { root: armGroup, upper: upperArm, forearm: forearm, hand: handGroup };
+    }
+
+    const leftArm = createCyberArm(false);
+    const rightArm = createCyberArm(true);
+    avatarGroup.add(leftArm.root);
+    avatarGroup.add(rightArm.root);
+
+    // 5. HOLOGRAPHIC ORBITAL RINGS & PARTICLES
+    const orbitalGroup = new THREE.Group();
+    orbitalGroup.position.y = 0.7;
+
+    const ringGeo1 = new THREE.TorusGeometry(1.6, 0.015, 8, 64);
+    const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.4 });
+    const ring1 = new THREE.Mesh(ringGeo1, ringMat1);
+    ring1.rotation.x = Math.PI / 2.5;
+    orbitalGroup.add(ring1);
+
+    const ringGeo2 = new THREE.TorusGeometry(2.0, 0.015, 8, 64);
+    const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.25 });
+    const ring2 = new THREE.Mesh(ringGeo2, ringMat2);
+    ring2.rotation.y = Math.PI / 3;
+    orbitalGroup.add(ring2);
+
+    avatarGroup.add(orbitalGroup);
+
+    // Floating Stardust Particles
+    const particleGeo = new THREE.BufferGeometry();
+    const particleCount = 400;
+    const posArray = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount * 3; i += 3) {
+      posArray[i] = (Math.random() - 0.5) * 12;
+      posArray[i + 1] = (Math.random() - 0.5) * 8 + 1;
+      posArray[i + 2] = (Math.random() - 0.5) * 12;
+    }
+    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.04,
+      color: 0x00f0ff,
+      transparent: true,
+      opacity: 0.75,
+      blending: THREE.AdditiveBlending
+    });
+    const particleSystem = new THREE.Points(particleGeo, particleMat);
+    scene.add(particleSystem);
+
+    // --- ANIMATION & STATE SYSTEM ---
+    let currentState = "idle";
+    let isSpeaking = false;
+    let gesturesEnabled = true;
+    let clock = new THREE.Clock();
+
+    function setState(state, text = null) {
+      currentState = state;
+      const lbl = document.getElementById('state-label');
+      const ind = document.getElementById('state-indicator');
+      const sub = document.getElementById('subtitles');
+
+      lbl.textContent = state.toUpperCase();
+      if (text) sub.textContent = `"${text}"`;
+
+      if (state === "speaking") {
+        isSpeaking = true;
+        ind.style.background = "#00f0ff";
+        ind.style.boxShadow = "0 0 15px #00f0ff";
+        visorMat.emissive.setHex(0x00f0ff);
+        visorMat.emissiveIntensity = 3.0;
+        coreEnergyMat.color.setHex(0x00f0ff);
+      } else if (state === "listening") {
+        isSpeaking = false;
+        ind.style.background = "#10b981";
+        ind.style.boxShadow = "0 0 15px #10b981";
+        visorMat.emissive.setHex(0x10b981);
+        visorMat.emissiveIntensity = 2.5;
+        coreEnergyMat.color.setHex(0x10b981);
+      } else if (state === "thinking" || state === "executing") {
+        isSpeaking = false;
+        ind.style.background = "#f59e0b";
+        ind.style.boxShadow = "0 0 15px #f59e0b";
+        visorMat.emissive.setHex(0xf59e0b);
+        visorMat.emissiveIntensity = 2.5;
+        coreEnergyMat.color.setHex(0xf59e0b);
+      } else {
+        isSpeaking = false;
+        ind.style.background = "#38bdf8";
+        ind.style.boxShadow = "0 0 10px #38bdf8";
+        visorMat.emissive.setHex(0x00f0ff);
+        visorMat.emissiveIntensity = 1.8;
+        coreEnergyMat.color.setHex(0x00f0ff);
+      }
+    }
+
+    function toggleGestures() {
+      gesturesEnabled = !gesturesEnabled;
+      document.getElementById('btn-anim').classList.toggle('active', gesturesEnabled);
+    }
+
+    function resetCamera() {
+      camera.position.set(0, 1.2, 5.5);
+      controls.target.set(0, 0.8, 0);
+    }
+
+    function triggerTestSpeech() {
+      setState("speaking", "All systems are operational, Sai. I am tracking your local vault, active priorities, and ready for your commands.");
+      setTimeout(() => setState("idle", "All systems online, Sai. Standing by for your command."), 6000);
+    }
+
+    function triggerTestAgent() {
+      setState("executing", "Executing agent task: Drafted project status email to vault and updated active priorities.");
+      setTimeout(() => setState("idle", "Agent action executed locally and verified."), 5000);
+    }
+
+    // Connect to server state SSE if available
+    function connectServerEvents() {
+      try {
+        const ev = new EventSource('/api/state/stream');
+        ev.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          if (data.state) setState(data.state, data.text);
+        };
+      } catch (err) {
+        console.log("Running in standalone interactive mode.");
+      }
+    }
+    connectServerEvents();
+
+    // --- MAIN RENDER LOOP ---
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+
+      // Idle subtle breathing
+      avatarGroup.position.y = Math.sin(elapsed * 1.5) * 0.05;
+      headGroup.rotation.y = Math.sin(elapsed * 0.7) * 0.08;
+      headGroup.rotation.x = Math.cos(elapsed * 0.9) * 0.04;
+
+      // Arc Reactor Pulsing
+      const pulseSpeed = isSpeaking ? 12 : 3;
+      const coreScale = 1.0 + Math.sin(elapsed * pulseSpeed) * 0.15;
+      reactorCore.scale.set(coreScale, coreScale, coreScale);
+      coreLight.intensity = 3.5 + Math.sin(elapsed * pulseSpeed) * 2.0;
+
+      // Orbital Rings Rotation
+      ring1.rotation.z += 0.008;
+      ring2.rotation.x += 0.006;
+      particleSystem.rotation.y += 0.001;
+
+      // Mouth Audio Wave Bars
+      mouthBars.forEach((bar, idx) => {
+        if (isSpeaking) {
+          const scale = 0.5 + Math.abs(Math.sin(elapsed * 18 + idx * 0.8)) * 2.5;
+          bar.scale.y = scale;
+        } else {
+          bar.scale.y = 0.2;
+        }
+      });
+
+      // Cyber Limbs Gesture Animation
+      if (gesturesEnabled) {
+        if (isSpeaking) {
+          // Expressive speaking gestures
+          rightArm.root.rotation.x = Math.sin(elapsed * 4) * 0.25 - 0.2;
+          rightArm.root.rotation.z = Math.cos(elapsed * 3) * 0.15;
+          leftArm.root.rotation.x = Math.cos(elapsed * 3.5) * 0.2 - 0.15;
+        } else {
+          // Gentle resting float
+          rightArm.root.rotation.x = Math.sin(elapsed * 1.5) * 0.05;
+          leftArm.root.rotation.x = Math.cos(elapsed * 1.5) * 0.05;
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
